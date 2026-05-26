@@ -36,7 +36,7 @@ export const addPost = async (req: Request, res: Response) => {
 };
 
 export const getPostByUser = async (req: Request, res: Response) => {
-  const id = req.params;
+  const { id } = req.params;
 
   const user = await prisma.user.findUnique({
     where: { id: Number(id) },
