@@ -6,4 +6,5 @@ import { addPost, getPostByUser } from "../controllers/post.controller";
 
 router.post("/", verifyToken, addPost);
 router.get("/:id", verifyToken, getPostByUser);
+
 export default router;
