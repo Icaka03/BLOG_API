@@ -64,3 +64,57 @@ export const getPostByUser = async (req: Request, res: Response) => {
     data: user.posts,
   });
 };
+
+export const editPost = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+
+  const post = await prisma.post.findUnique({
+    where: { id: Number(id) },
+  });
+
+  if (!post) {
+    res.status(400).json({
+      success: false,
+      message: "not found post",
+    });
+    return;
+  }
+
+  const updatedPost = await prisma.post.update({
+    where: { id: Number(id) },
+    data: { title, content },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: updatedPost,
+    message: "post updated",
+  });
+};
+
+export const deletePost = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const post = await prisma.post.findUnique({
+    where: { id: Number(id) },
+  });
+
+  if (!post) {
+    res.status(400).json({
+      success: false,
+      message: "not found post",
+    });
+    return;
+  }
+
+  const deletedPost = await prisma.post.delete({
+    where: { id: Number(id) },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: deletedPost,
+    message: "post deleted",
+  });
+};
