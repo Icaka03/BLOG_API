@@ -59,3 +59,24 @@ export const getAllComments = async (req: Request, res: Response) => {
     data: comments,
   });
 };
+
+export const getCommentsById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const postComments = await prisma.post.findUnique({
+    where: { id: Number(id) },
+    include: { comment: true },
+  });
+
+  if (!postComments) {
+    res.status(400).json({
+      success: false,
+      message: "not found post",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: postComments,
+  });
+};
