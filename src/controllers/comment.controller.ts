@@ -80,3 +80,57 @@ export const getCommentsById = async (req: Request, res: Response) => {
     data: postComments,
   });
 };
+
+export const editComment = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: Number(id) },
+  });
+
+  if (!comment) {
+    res.status(400).json({
+      success: false,
+      message: "not found comment",
+    });
+    return;
+  }
+
+  const updateComment = await prisma.comment.update({
+    where: { id: Number(id) },
+    data: { content },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: updateComment,
+    message: "comment updated",
+  });
+};
+
+export const deleteComment = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: Number(id) },
+  });
+
+  if (!comment) {
+    res.status(400).json({
+      success: false,
+      message: "not found comment",
+    });
+    return;
+  }
+
+  const deleteComment = await prisma.comment.delete({
+    where: { id: Number(id) },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: deleteComment,
+    message: "comment deleted",
+  });
+};
