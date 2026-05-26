@@ -1,15 +1,16 @@
-# REST API with Auth
+# BLOG API
 
-A RESTful API built with Node.js, Express, TypeScript, PostgreSQL and Prisma. Features user authentication with JWT and full product CRUD.
+A RESTful API for a blog platform built with Node.js, Express, TypeScript, Prisma, and PostgreSQL.
 
 ## Tech Stack
 
-- **Runtime:** Node.js
-- **Framework:** Express
-- **Language:** TypeScript
-- **Database:** PostgreSQL (Docker)
-- **ORM:** Prisma
-- **Auth:** JWT + bcryptjs
+- **Node.js** with **Express** — server and routing
+- **TypeScript** — type safety
+- **Prisma** — ORM for database access
+- **PostgreSQL** — database (running in Docker)
+- **JWT** — authentication
+- **bcryptjs** — password hashing
+- **Jest** + **Supertest** — testing
 
 ## Getting Started
 
@@ -21,157 +22,74 @@ A RESTful API built with Node.js, Express, TypeScript, PostgreSQL and Prisma. Fe
 ### Installation
 
 1. Clone the repo
-
-```bash
-git clone https://github.com/yourusername/rest-api.git
-cd rest-api
-```
-
 2. Install dependencies
 
 ```bash
-npm install
+   npm install
 ```
 
-3. Create a `.env` file in the root:
+3. Create a `.env` file
 
 ```env
-DATABASE_URL="postgresql://admin:password@localhost:5432/mydb"
-JWT_SECRET="your-jwt-secret"
-PORT=3000
-NODE_ENV=development
+   DATABASE_URL="postgresql://postgres:yourpassword@localhost:5433/blog_api?schema=public"
+   JWT_SECRET="your_jwt_secret"
+   PORT=3000
 ```
 
-4. Start PostgreSQL with Docker
+4. Start the database
 
 ```bash
-docker run --name postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mydb -p 5432:5432 -d postgres
+   docker compose up -d
 ```
 
-5. Run Prisma migrations
+5. Run migrations
 
 ```bash
-npx prisma migrate dev
+   npx prisma migrate dev
 ```
 
 6. Start the server
 
 ```bash
-npm run dev
+   npm run dev
 ```
-
-Server runs at `http://localhost:3000`
-
----
 
 ## API Endpoints
 
 ### Auth
 
-| Method | Endpoint             | Description                 | Auth Required |
-| ------ | -------------------- | --------------------------- | ------------- |
-| POST   | `/api/auth/register` | Register a new user         | No            |
-| POST   | `/api/auth/login`    | Login and receive JWT token | No            |
+| Method | Endpoint             | Description         |
+| ------ | -------------------- | ------------------- |
+| POST   | `/api/auth/register` | Register a new user |
+| POST   | `/api/auth/login`    | Login and get token |
 
-#### Register
+### Posts
 
-```
-POST /api/auth/register
-Content-Type: application/json
+| Method | Endpoint        | Description       |
+| ------ | --------------- | ----------------- |
+| POST   | `/api/post`     | Create a post     |
+| GET    | `/api/post/:id` | Get posts by user |
+| PUT    | `/api/post/:id` | Update a post     |
+| DELETE | `/api/post/:id` | Delete a post     |
 
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
+### Comments
 
-#### Login
+| Method | Endpoint           | Description          |
+| ------ | ------------------ | -------------------- |
+| POST   | `/api/comment`     | Add a comment        |
+| GET    | `/api/comment`     | Get all comments     |
+| GET    | `/api/comment/:id` | Get comments by post |
+| PUT    | `/api/comment/:id` | Update a comment     |
+| DELETE | `/api/comment/:id` | Delete a comment     |
 
-```
-POST /api/auth/login
-Content-Type: application/json
+## Testing
 
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-Returns a JWT token — use it on protected routes.
-
----
-
-### Products
-
-| Method | Endpoint            | Description      | Auth Required |
-| ------ | ------------------- | ---------------- | ------------- |
-| GET    | `/api/products`     | Get all products | No            |
-| POST   | `/api/products`     | Create a product | Yes           |
-| PUT    | `/api/products/:id` | Update a product | Yes           |
-| DELETE | `/api/products/:id` | Delete a product | Yes           |
-
-#### Create Product (Protected)
-
-```
-POST /api/products
-Authorization: Bearer <your-token>
-Content-Type: application/json
-
-{
-  "name": "Laptop",
-  "price": 999
-}
+```bash
+npm test
 ```
 
-#### Update Product (Protected)
+## Database Schema
 
-```
-PUT /api/products/1
-Authorization: Bearer <your-token>
-Content-Type: application/json
-
-{
-  "name": "Updated Laptop",
-  "price": 1200
-}
-```
-
-#### Delete Product (Protected)
-
-```
-DELETE /api/products/1
-Authorization: Bearer <your-token>
-```
-
----
-
-### Users
-
-| Method | Endpoint     | Description   | Auth Required |
-| ------ | ------------ | ------------- | ------------- |
-| GET    | `/api/users` | Get all users | No            |
-
----
-
-## Using Protected Routes
-
-1. Login via `POST /api/auth/login` and copy the token from the response
-2. On protected requests add this header:
-
-```
-Authorization: Bearer <your-token>
-```
-
-In Postman: Auth tab → Bearer Token → paste token.
-
----
-
-## Deployment
-
-This API is deployed on Railway. The live base URL is:
-
-```
-https://your-app.railway.app
-```
-
-> Note: replace the base URL above with your Railway URL after deploying.
+- **User** — has many Posts and Comments
+- **Post** — belongs to a User, has many Comments
+- **Comment** — belongs to a User and a Post
